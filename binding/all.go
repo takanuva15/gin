@@ -39,10 +39,6 @@ func (allBinding) BindMany(req *http.Request, uriParams map[string][]string, bod
 		contentType = contentType[:contentTypeLastIdx]
 	}
 	b := Default(req.Method, contentType)
-	if err := b.Bind(req, obj); err != nil {
-		return err
-	}
-
-	// only validate AFTER all request parts have been bound
-	return validate(obj)
+	// final validation done by whatever binding is selected here
+	return b.Bind(req, obj)
 }

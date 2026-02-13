@@ -86,7 +86,7 @@ var Validator StructValidator = &defaultValidator{}
 // These implement the Binding interface and can be used to bind the data
 // present in the request to struct instances.
 var (
-	All           BindingMany = allBinding{}
+	All           BindingMany = allBinding{} // NOTE: This uses below bindings and doesn't have its own Content-Type
 	JSON          BindingBody = jsonBinding{}
 	XML           BindingBody = xmlBinding{}
 	Form          Binding     = formBinding{}
