@@ -1065,6 +1065,59 @@ func TestMappingUsingTextUnmarshalerWhenBindUnmarshalerAlsoDefined(t *testing.T)
 
 // ====  TextUnmarshaler tests END ====
 
+// ====  json.Unmarshaler parser tests START ====
+
+func TestMappingJSONUnmarshalerPrimitive(t *testing.T) {
+	var s struct {
+		Field int `form:"field,parser=json.Unmarshaler"`
+	}
+	err := mappingByPtr(&s, formSource{"field": {`42`}}, "form")
+	require.NoError(t, err)
+	assert.Equal(t, 42, s.Field)
+}
+
+func TestMappingJSONUnmarshalerPrimitiveUri(t *testing.T) {
+	var s struct {
+		Field int `uri:"field,parser=json.Unmarshaler"`
+	}
+	err := mappingByPtr(&s, formSource{"field": {`42`}}, "uri")
+	require.NoError(t, err)
+	assert.Equal(t, 42, s.Field)
+}
+
+func TestMappingJSONUnmarshalerArray(t *testing.T) {
+	var s struct {
+		Field []int `form:"field,parser=json.Unmarshaler"`
+	}
+	err := mappingByPtr(&s, formSource{"field": {`[1,2,3]`}}, "form")
+	require.NoError(t, err)
+	assert.Equal(t, []int{1, 2, 3}, s.Field)
+}
+
+type jsonUnmarshalerPoint struct {
+	X int `json:"x"`
+	Y int `json:"y"`
+}
+
+func TestMappingJSONUnmarshalerObject(t *testing.T) {
+	var s struct {
+		Field jsonUnmarshalerPoint `form:"field,parser=json.Unmarshaler"`
+	}
+	err := mappingByPtr(&s, formSource{"field": {`{"x":1,"y":2}`}}, "form")
+	require.NoError(t, err)
+	assert.Equal(t, jsonUnmarshalerPoint{X: 1, Y: 2}, s.Field)
+}
+
+func TestMappingJSONUnmarshalerObjectInvalid(t *testing.T) {
+	var s struct {
+		Field jsonUnmarshalerPoint `form:"field,parser=json.Unmarshaler"`
+	}
+	err := mappingByPtr(&s, formSource{"field": {`not-json`}}, "form")
+	require.Error(t, err)
+}
+
+// ====  json.Unmarshaler parser tests END ====
+
 func TestMappingEmptyValues(t *testing.T) {
 	t.Run("slice with default", func(t *testing.T) {
 		var s struct {

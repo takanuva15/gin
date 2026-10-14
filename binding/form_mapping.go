@@ -206,6 +206,8 @@ func trySetUsingParser(val string, value reflect.Value, parser string) (isSet bo
 			return false, nil
 		}
 		return true, v.UnmarshalText([]byte(val))
+	case "json.Unmarshaler":
+		return true, json.API.Unmarshal([]byte(val), value.Addr().Interface())
 	}
 	return false, nil
 }
